@@ -14,7 +14,7 @@ Author URI: https://xeronce.com
 */
 
 
-// register_activation_hook( __FILE__, 'is_base_plugins_active' );
+register_activation_hook( __FILE__, 'is_base_plugins_active' );
 function is_base_plugins_active() {
 	if ( ! is_plugin_active( XERONCE_PLUGIN_FILE ) || ! is_plugin_active( GIVE_PLUGIN_FILE ) ) {
 		wp_die( 'Sorry, but this plugin requires the "Xeronce Base" && "Give" Plugin to be installed and active.' );
