@@ -105,55 +105,55 @@ add_action( 'give_amarpay_cc_form', 'give_amarpay_billing_fields' );
  * Set params as form input and auto submit the form to redirect gateway website
  * @param $donation_data
  **/
-function send_post_data_to_payment_website( $donation_data ) {
-	echo '<p><strong>' . __( 'Thank you for your order.', 'woo_aamarpay' ) . '</strong><br/>' . __( 'The payment page will open soon.', 'woo_aamarpay' ) . '</p>';
-	echo generate_post_form($donation_data);
-} //END-receipt_page
+// function send_post_data_to_payment_website( $donation_data ) {
+// 	echo '<p><strong>' . __( 'Thank you for your order.', 'woo_aamarpay' ) . '</strong><br/>' . __( 'The payment page will open soon.', 'woo_aamarpay' ) . '</p>';
+// 	echo generate_post_form($donation_data);
+// } //END-receipt_page
 
 
 
-/**
- * Generate Form
- **/
-function generate_post_form( $transaction_data) {
-	$redirect_url        = get_site_url() . "/?page_id=5";
-	$gateway_data_args       = array(
-		"store_id"      => $transaction_data['store_id'],
-		"tran_id"       => '1111111',
-		"signature_key" => $transaction_data['signature_key'],
-		"success_url"   => $redirect_url,
-		"fail_url"      => $redirect_url,
-		"cancel_url"    => $redirect_url,
-		"amount"        => 22,
-		"currency"      => 'USD',
-		"desc"          => "no data",
-		"cus_name"      => 'test name',
-		"cus_email"     => 'test@test.com',
-		"cus_add1"      => 'add1',
-		"cus_add2"      => 'add2',
-		"cus_city"      => 'city',
-		"cus_state"     => 'state',
-		"cus_postcode"  => 1234,
-		"cus_country"   => 'BD',
-		"cus_phone"     => "123456789",
-	);
-	$gateway_data_args_array = array();
-	foreach ( $gateway_data_args as $key => $value ) {
-		$gateway_data_args_array[] = "<input type='hidden' name='$key' value='$value'/>";
-	}
+// /**
+//  * Generate Form
+//  **/
+// function generate_post_form( $transaction_data) {
+// 	$redirect_url        = get_site_url() . "/?page_id=5";
+// 	$gateway_data_args       = array(
+// 		"store_id"      => $transaction_data['store_id'],
+// 		"tran_id"       => '1111111',
+// 		"signature_key" => $transaction_data['signature_key'],
+// 		"success_url"   => $redirect_url,
+// 		"fail_url"      => $redirect_url,
+// 		"cancel_url"    => $redirect_url,
+// 		"amount"        => 22,
+// 		"currency"      => 'USD',
+// 		"desc"          => "no data",
+// 		"cus_name"      => 'test name',
+// 		"cus_email"     => 'test@test.com',
+// 		"cus_add1"      => 'add1',
+// 		"cus_add2"      => 'add2',
+// 		"cus_city"      => 'city',
+// 		"cus_state"     => 'state',
+// 		"cus_postcode"  => 1234,
+// 		"cus_country"   => 'BD',
+// 		"cus_phone"     => "123456789",
+// 	);
+// 	$gateway_data_args_array = array();
+// 	foreach ( $gateway_data_args as $key => $value ) {
+// 		$gateway_data_args_array[] = "<input type='hidden' name='$key' value='$value'/>";
+// 	}
 
-	return '	<form action="' . PAYMENT_URL . '" method="post">
-  				' . implode( '', $gateway_data_args_array ) . '
-				    <input type="submit" class="button-alt" id="submit_generated_form" value="' . __( 'Pay via AamarPay', 'give-square' ) . '" /> <a class="button cancel" href="/">' . __( 'Cancel order &amp; restore cart', 'give-square' ) . '</a>
-					<script type="text/javascript">
-					    console.log("Form Called!");
-					    jQuery(function(){
-					        $("submit_generated_form").click();
-					    });
-					</script>
-				</form>';
+// 	return '	<form action="' . PAYMENT_URL . '" method="post">
+//   				' . implode( '', $gateway_data_args_array ) . '
+// 				    <input type="submit" class="button-alt" id="submit_generated_form" value="' . __( 'Pay via AamarPay', 'give-square' ) . '" /> <a class="button cancel" href="/">' . __( 'Cancel order &amp; restore cart', 'give-square' ) . '</a>
+// 					<script type="text/javascript">
+// 					    console.log("Form Called!");
+// 					    jQuery(function(){
+// 					        $("submit_generated_form").click();
+// 					    });
+// 					</script>
+// 				</form>';
 
-} //END-generate_aamarpay_form
+// } //END-generate_aamarpay_form
 
 
 
@@ -166,6 +166,8 @@ function amarpay_for_give_process_amarpay_donation( $posted_data ) {
 		$form_id         = intval( $posted_data['post_data']['give-form-id'] );
 		$price_id        = ! empty( $posted_data['post_data']['give-price-id'] ) ? $posted_data['post_data']['give-price-id'] : 0;
 		$donation_amount = ! empty( $posted_data['price'] ) ? $posted_data['price'] : 0;
+		$redirect_to_url = ! empty( $data['post_data']['give-current-url'] ) ? $data['post_data']['give-current-url'] : site_url();
+		$purchase_key    = $posted_data['purchase_key'];
 
 		$donation_data = array(
 			'price'           => $donation_amount,
@@ -174,7 +176,7 @@ function amarpay_for_give_process_amarpay_donation( $posted_data ) {
 			'give_price_id'   => $price_id,
 			'date'            => $posted_data['date'],
 			'user_email'      => $posted_data['user_email'],
-			'purchase_key'    => $posted_data['purchase_key'],
+			'purchase_key'    => $purchase_key,
 			'currency'        => give_get_currency( $form_id ),
 			'user_info'       => $posted_data['user_info'],
 			'status'          => 'pending',
@@ -198,29 +200,45 @@ function amarpay_for_give_process_amarpay_donation( $posted_data ) {
 		// as a reference, this pulls the API key entered above: give_get_option('amarpay_for_give_amarpay_api_key')
 
 
-		// Make required data array
-		$donation_amount  = ! empty( $posted_data['price'] ) ? $posted_data['price'] : 0;
-		$transaction_data = array(
-			"store_id"      => give_get_option( 'amarpay_for_give_amarpay_merchant_id' ),
-			"tran_id"       => $donation_id,
-			"signature_key" => give_get_option( 'amarpay_for_give_amarpay_signature_key' ),
-			"success_url"   => '-',
-			"fail_url"      => '-',
-			"cancel_url"    => '-',
-			"amount"        => $donation_amount,
-			"currency"      => $donation_data['currency'],
-			"desc"          => "no data",
-			"cus_name"      => $donation_data['user_info']['first_name'] . " " . $donation_data['user_info']['last_name'],
-			"cus_email"     => $donation_data['user_email'],
-			"cus_add1"      => $donation_data['user_info']['address']['line1'],
-			"cus_add2"      => $donation_data['user_info']['address']['line2'],
-			"cus_city"      => $donation_data['user_info']['address']['city'],
-			"cus_state"     => $donation_data['user_info']['address']['state'],
-			"cus_postcode"  => $donation_data['user_info']['address']['zip'],
-			"cus_country"   => $donation_data['user_info']['address']['country'],
-			"cus_phone"     => "123456789",
+
+		// Redirect to show loading area to trigger redirectToCheckout client side.
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'action'      => 'process_amarpay',
+					'session'     => $purchase_key,
+				),
+				$redirect_to_url
+			)
 		);
-		send_post_data_to_payment_website($transaction_data);
+
+		// Ensure that donation stops from here and redirect to checkout page.
+		give_die();
+
+		// Make required data array
+		// $donation_amount  = ! empty( $posted_data['price'] ) ? $posted_data['price'] : 0;
+		// $transaction_data = array(
+		// 	"store_id"      => give_get_option( 'amarpay_for_give_amarpay_merchant_id' ),
+		// 	"tran_id"       => $donation_id,
+		// 	"signature_key" => give_get_option( 'amarpay_for_give_amarpay_signature_key' ),
+		// 	"success_url"   => '-',
+		// 	"fail_url"      => '-',
+		// 	"cancel_url"    => '-',
+		// 	"amount"        => $donation_amount,
+		// 	"currency"      => $donation_data['currency'],
+		// 	"desc"          => "no data",
+		// 	"cus_name"      => $donation_data['user_info']['first_name'] . " " . $donation_data['user_info']['last_name'],
+		// 	"cus_email"     => $donation_data['user_email'],
+		// 	"cus_add1"      => $donation_data['user_info']['address']['line1'],
+		// 	"cus_add2"      => $donation_data['user_info']['address']['line2'],
+		// 	"cus_city"      => $donation_data['user_info']['address']['city'],
+		// 	"cus_state"     => $donation_data['user_info']['address']['state'],
+		// 	"cus_postcode"  => $donation_data['user_info']['address']['zip'],
+		// 	"cus_country"   => $donation_data['user_info']['address']['country'],
+		// 	"cus_phone"     => "123456789",
+		// );
+		
+		// send_post_data_to_payment_website($transaction_data);
 
 
 
@@ -238,3 +256,60 @@ function amarpay_for_give_process_amarpay_donation( $posted_data ) {
 	} // End if().
 }
 add_action( 'give_gateway_amarpay', 'amarpay_for_give_process_amarpay_donation' );
+
+
+function amarpay_redirect_to_checkout() {
+	$get_data = give_clean( $_GET );
+
+	// Bailout, if not processing Amarpay donations.
+	if ( ! empty( $get_data['action'] ) && 'process_amarpay' !== $get_data['action'] ) {
+		return;
+	}
+
+	$key = ! empty( $get_data['session'] ) ? $get_data['session'] : '';
+	$donation_id = give_get_donation_id_by_key( $key );
+
+	// Bailout, if donation id doesn't exist or incorrect.
+	if ( ! $donation_id ) {
+		return;
+	}
+	
+	
+	$gateway_data_args       = array(
+		"store_id"      => give_get_option( 'amarpay_for_give_amarpay_merchant_id' ),
+		"tran_id"       => $donation_id,
+		"signature_key" => give_get_option( 'amarpay_for_give_amarpay_signature_key' ),
+		"success_url"   => give_get_success_page_uri(),
+		"fail_url"      => give_get_failed_transaction_uri(),
+		"cancel_url"    => give_get_success_page_uri(),
+		"amount"        => give_donation_amount( $donation_id ),
+		"currency"      => give_get_currency( $donation_id ),
+		"desc"          => "no data",
+		"cus_name"      => 'test name',
+		"cus_email"     => 'test@test.com',
+		"cus_add1"      => 'add1',
+		"cus_add2"      => 'add2',
+		"cus_city"      => 'city',
+		"cus_state"     => 'state',
+		"cus_postcode"  => 1234,
+		"cus_country"   => 'BD',
+		"cus_phone"     => "123456789",
+	);
+	$gateway_data_args_array = array();
+	foreach ( $gateway_data_args as $key => $value ) {
+		$gateway_data_args_array[] = "<input type='hidden' name='$key' value='$value'/>";
+	}
+
+	echo '	<form action="' . PAYMENT_URL . '" method="post">
+  				' . implode( '', $gateway_data_args_array ) . '
+				    <input type="submit" class="button-alt" id="submit_generated_form" value="' . __( 'Pay via AamarPay', 'give-square' ) . '" /> <a class="button cancel" href="/">' . __( 'Cancel order &amp; restore cart', 'give-square' ) . '</a>
+					<script type="text/javascript">
+					    console.log("Form Called!");
+					    jQuery(function(){
+					        $("submit_generated_form").click();
+					    });
+					</script>
+				</form>';
+}
+
+add_action( 'init', 'amarpay_redirect_to_checkout' );
