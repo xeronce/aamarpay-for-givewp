@@ -14,13 +14,18 @@ Author URI: https://xeronce.com
 */
 
 
+// Give Plugin Dependency Check
 register_activation_hook( __FILE__, 'is_base_plugins_active' );
 function is_base_plugins_active() {
-	if ( ! is_plugin_active( XERONCE_PLUGIN_FILE ) || ! is_plugin_active( GIVE_PLUGIN_FILE ) ) {
-		wp_die( 'Sorry, but this plugin requires the "Xeronce Base" && "Give" Plugin to be installed and active.' );
+	if (! is_plugin_active( GIVE_PLUGIN_FILE ) ) {
+		wp_die( 'Sorry, but this plugin requires the "Give" Plugin to be installed and active.' );
 	}
 }
-define( 'aamarpay_IMG', WP_PLUGIN_URL . "/" . plugin_basename( dirname( __FILE__ ) ) . '/assets/img/' );
+
+// Required Urls
+define('PAYMENT_URL', 'https://sandbox.aamarpay.com/index.php');
+//define('PAYMENT_URL', 'https://secure.aamarpay.com/index.php');
+define( 'aamarpay_IMG', WP_PLUGIN_URL . "/" . plugin_basename( dirname( __FILE__ ) ) . '/assets/img' );
 
 
 
@@ -84,7 +89,7 @@ function give_amarpay_billing_fields( $form_id ) {
 		'
 		<fieldset class="no-fields">
 			<div style="display: flex; justify-content: center; margin-top: 20px;">
-				<img src="' . aamarpay_IMG . 'aamar-pay-logo.png" height="24px" />
+				<img src="' . aamarpay_IMG . '/aamar-pay-logo.png" height="24px" />
 			</div>
 			<p style="text-align: center;"><b>%1$s</b></p>
 			<p style="text-align: center;">
